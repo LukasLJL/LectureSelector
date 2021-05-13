@@ -18,7 +18,7 @@ public class Notifier {
     private Setting setting;
     private ArrayList<JCalDavCalenderItem> calenderItems;
 
-    public Notifier(Setting setting){
+    public Notifier(Setting setting) {
         this.setting = setting;
     }
 
@@ -34,21 +34,21 @@ public class Notifier {
         ArrayList<JCalDavCalenderItem> todayLectures = new ArrayList<>();
 
         for (JCalDavCalenderItem item : this.calenderItems) {
-            if(item.getStartTime().isAfter(currentDateTime) && item.getStartTime().isBefore(currentDateTime.plusDays(1))){
+            if (item.getStartTime().isAfter(currentDateTime) && item.getStartTime().isBefore(currentDateTime.plusDays(1))) {
                 todayLectures.add(item);
             }
         }
 
         //Create Timers for today lectures
-        for (JCalDavCalenderItem item: todayLectures){
-            Date date = Date.from(item.getStartTime().atZone(ZoneId.systemDefault()).toInstant());
+        for (JCalDavCalenderItem item : todayLectures) {
+            Date date = Date.from(item.getStartTime().minusMinutes(5).atZone(ZoneId.systemDefault()).toInstant());
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     trayIcon.displayMessage(item.getSummary(), item.getStartTime().toLocalTime().toString() + item.getDescription(), TrayIcon.MessageType.INFO);
-                    for (Lecture lecture: lectures){
-                        if(item.getSummary().contains(lecture.getName())){
+                    for (Lecture lecture : lectures) {
+                        if (item.getSummary().contains(lecture.getName())) {
                             trayIcon.addActionListener(e -> new TrayMenu().openLecture(lecture));
                         }
                     }

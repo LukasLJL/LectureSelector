@@ -12,8 +12,9 @@ public class Settings {
 
     private ArrayList<Lecture> lectures;
     private Setting settings;
+    private final Dimension spacing = new Dimension(0, 2);
 
-    public Settings(ArrayList<Lecture> lectures, Setting settings){
+    public Settings(ArrayList<Lecture> lectures, Setting settings) {
         this.lectures = lectures;
         this.settings = settings;
     }
@@ -30,60 +31,36 @@ public class Settings {
         JFrame jFrame = new JFrame();
 
         //JFrame Settings
-        jFrame.setTitle("LectureManger - Settings");
+        jFrame.setTitle("LectureSelector - Settings");
+        Image image = Toolkit.getDefaultToolkit().getImage(Settings.class.getResource("/img/icon.png"));
+        jFrame.setIconImage(image);
         jFrame.setVisible(true);
 
         //Create Base JPanel to store every component
         JPanel jPanel = new JPanel();
         jPanel.setLayout(new BoxLayout(jPanel, BoxLayout.Y_AXIS));
-
+        jPanel.add(Box.createRigidArea(this.spacing));
 
         //Lectures Content
         for (Lecture lecture : lectures) {
             jPanel.add(addLecture(lecture, jPanel));
+            jPanel.add(Box.createRigidArea(spacing));
         }
 
         //Add Field
-        JPanel jPanelField = new JPanel();
-        jPanelField.setLayout(new BoxLayout(jPanelField, BoxLayout.X_AXIS));
+        addSection(jPanel, jFrame);
 
-        JButton buttonAddField = new JButton("Add Lecture");
-        buttonAddField.addActionListener(e -> {
-            Lecture lecture = new Lecture("Example Name", "Example URL", "Example Password");
-            lectures.add(lecture);
-            jPanel.add(addLecture(lecture, jPanel), jPanel.getComponentCount() - 2);
-            SwingUtilities.updateComponentTreeUI(jFrame);
-        });
-
-        jPanelField.add(buttonAddField);
-        jPanel.add(jPanelField);
+        //CalDav Settings Button
+        calDavSettingButton(jPanel);
 
         //Buttons
-        JPanel jPanelButtons = new JPanel();
-        jPanelButtons.setLayout(new BoxLayout(jPanelButtons, BoxLayout.X_AXIS));
-
-        //Cancel
-        JButton buttonCancel = new JButton("Cancel");
-        buttonCancel.addActionListener(e -> jFrame.dispose());
-
-        //Save
-        JButton buttonSave = new JButton("Save");
-        buttonSave.addActionListener(e -> {
-            saveLectures();
-            jFrame.dispose();
-            TrayMenu trayMenu = new TrayMenu();
-            trayMenu.generateMenu(lectures, settings);
-        });
-
-        jPanelButtons.add(buttonCancel);
-        jPanelButtons.add(buttonSave);
+        JButton buttonSave = settingButtons(jPanel, jFrame);
 
         //Prepare panels
-        jPanel.add(jPanelButtons);
         jFrame.add(jPanel);
         jFrame.pack();
 
-        jFrame.setSize(1280, 720);
+        jFrame.setSize(1280, 420);
         return buttonSave;
     }
 
@@ -110,17 +87,17 @@ public class Settings {
         password.setMaximumSize(dimension);
 
         //Listener
-        name.getDocument().addDocumentListener((ChangeDocumentListener) e-> {
+        name.getDocument().addDocumentListener((ChangeDocumentListener) e -> {
             lecture.setName(name.getText());
             lectures.set(lectureIndex, lecture);
         });
 
-        url.getDocument().addDocumentListener((ChangeDocumentListener) e-> {
+        url.getDocument().addDocumentListener((ChangeDocumentListener) e -> {
             lecture.setUrl(url.getText());
             lectures.set(lectureIndex, lecture);
         });
 
-        password.getDocument().addDocumentListener((ChangeDocumentListener) e-> {
+        password.getDocument().addDocumentListener((ChangeDocumentListener) e -> {
             lecture.setPassword(password.getText());
             lectures.set(lectureIndex, lecture);
         });
@@ -144,11 +121,67 @@ public class Settings {
         return jPanelLecture;
     }
 
+    private void addSection(JPanel jPanel, JFrame jFrame) {
+        //Panel
+        JPanel jPanelField = new JPanel();
+        jPanelField.setLayout(new BoxLayout(jPanelField, BoxLayout.X_AXIS));
+        //Button
+        JButton buttonAddField = new JButton("Add Lecture");
+        buttonAddField.addActionListener(e -> {
+            Lecture lecture = new Lecture("Example Name", "Example URL", "Example Password");
+            this.lectures.add(lecture);
+            jPanel.add(addLecture(lecture, jPanel), jPanel.getComponentCount() - 6);
+            SwingUtilities.updateComponentTreeUI(jFrame);
+        });
+        jPanelField.add(buttonAddField);
+        jPanel.add(jPanelField);
+        jPanel.add(Box.createRigidArea(this.spacing));
+    }
+
+    private void calDavSettingButton(JPanel jPanel) {
+        JPanel jPanelFieldCalDav = new JPanel();
+        jPanelFieldCalDav.setLayout(new BoxLayout(jPanelFieldCalDav, BoxLayout.X_AXIS));
+        JButton buttonCaldavSettings = new JButton("CalDav Settings");
+        buttonCaldavSettings.addActionListener(e -> {
+            CalDavSettings calDavSettings = new CalDavSettings(this.settings);
+            calDavSettings.openCalDavSettings();
+        });
+
+        jPanelFieldCalDav.add(buttonCaldavSettings);
+        jPanel.add(jPanelFieldCalDav);
+        jPanel.add(Box.createRigidArea(this.spacing));
+    }
+
+    private JButton settingButtons(JPanel jPanel, JFrame jFrame){
+        JPanel jPanelButtons = new JPanel();
+        jPanelButtons.setLayout(new BoxLayout(jPanelButtons, BoxLayout.X_AXIS));
+
+        //Cancel
+        JButton buttonCancel = new JButton("Cancel");
+        buttonCancel.addActionListener(e -> jFrame.dispose());
+
+        //Save
+        JButton buttonSave = new JButton("Save");
+        buttonSave.addActionListener(e -> {
+            saveLectures();
+            jFrame.dispose();
+            TrayMenu trayMenu = new TrayMenu();
+            trayMenu.generateMenu(lectures, settings);
+        });
+
+        jPanelButtons.add(buttonCancel);
+        jPanelButtons.add(buttonSave);
+
+        jPanel.add(jPanelButtons);
+        jPanel.add(Box.createRigidArea(this.spacing));
+        return buttonSave;
+    }
+
     private void deleteLecture(Lecture lecture) {
         lectures.remove(lecture);
     }
 
-    private void saveLectures(){
+    private void saveLectures() {
         Manager manager = new Manager();
         manager.saveLectures(lectures);
     }

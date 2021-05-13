@@ -23,7 +23,7 @@ public class Manager {
     public ArrayList<Lecture> loadLectures() {
         File jsonInput = new File(filePathLectures);
         if (!jsonInput.exists()) {
-            generateSettingsFile();
+            generateLectureFile();
         }
         Importer importer = new Importer();
         return importer.loadLecturesFromFile(filePathLectures);
@@ -31,13 +31,11 @@ public class Manager {
 
     public void saveLectures(ArrayList<Lecture> lectures) {
         Exporter exporter = new Exporter();
-        File file = new File(filePathLectures);
         exporter.saveToFile(lectures, filePathLectures);
     }
 
     public void saveSettings(Setting setting){
         Exporter exporter = new Exporter();
-        File file = new File(filePathSettings);
         exporter.saveToFile(setting, filePathSettings);
     }
 

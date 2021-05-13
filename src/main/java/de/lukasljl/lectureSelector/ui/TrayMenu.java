@@ -25,12 +25,12 @@ public class TrayMenu {
         PopupMenu popupMenu = new PopupMenu();
 
         //Add Image to TrayIcon
-        TrayIcon trayIcon = new TrayIcon(image, "LectureManager", popupMenu);
+        TrayIcon trayIcon = new TrayIcon(image, "LectureSelector", popupMenu);
         trayIcon.setImageAutoSize(true);
         //Gen SysTray
         SystemTray systemTray = SystemTray.getSystemTray();
 
-        if(lectureSetting.isCalDav()){
+        if (lectureSetting.isCalDav()) {
             //Adding Notifier to get Notifications for upcoming lectures
             Notifier notifier = new Notifier(lectureSetting);
             notifier.startNotifier(lectures, trayIcon);
