@@ -1,19 +1,21 @@
 package de.lukasljl.lectureSelector.ui;
 
 import de.lukasljl.lectureSelector.entity.Lecture;
+import de.lukasljl.lectureSelector.entity.Setting;
 import de.lukasljl.lectureSelector.lectureManager.Manager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Settings {
 
     private ArrayList<Lecture> lectures;
+    private Setting settings;
 
-    public Settings(ArrayList<Lecture> lectures){
+    public Settings(ArrayList<Lecture> lectures, Setting settings){
         this.lectures = lectures;
+        this.settings = settings;
     }
 
     public JButton getSettings() {
@@ -70,7 +72,7 @@ public class Settings {
             saveLectures();
             jFrame.dispose();
             TrayMenu trayMenu = new TrayMenu();
-            trayMenu.generateMenu(lectures);
+            trayMenu.generateMenu(lectures, settings);
         });
 
         jPanelButtons.add(buttonCancel);
